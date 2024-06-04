@@ -1,5 +1,5 @@
 # Spring-boot Banking
-Example project demonstrating the use of Java and Spring-boot to build a microservice to be used by an online bank
+CI pipeline for the example at https://github.com/pauldragoslav/Spring-boot-Banking. This example project demonstrates the use of Java and Spring-boot to build a microservice to be used by an online bank
 
 ## Running locally
 ```
@@ -18,6 +18,17 @@ docker build -t "spring-boot:banking" .
 ```
 docker run -p 8080:8080 spring-boot:banking
 ```
+
+## Running on Docker with CI/CD
+```
+commit changes to trigger the CI pipeline defined in .gitlab-ci-yml file
+```
+
+```
+docker run -p 8080:8080 192.168.0.20:5050/devops/spring-boot/banking:v1
+```
+
+
 
 ## Testing
 Import the Postman collection file into the application or copy the request body from there
