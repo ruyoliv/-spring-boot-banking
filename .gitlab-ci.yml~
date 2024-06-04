@@ -1,0 +1,33 @@
+#image: docker:26.1.3
+stages:
+ - build
+ - deploy
+
+build_artifacts:
+  #image: maven:3.6.0-jdk-8-slim
+  image: maven:3.8.5-openjdk-17-slim
+  stage: build
+  script:
+   - echo "Maven clean install em andamento !!!"
+   - ./mvnw clean install -DskipTests=true    #-Dmaven.test.skip=true
+  artifacts:
+    paths:
+      - target/*.jar
+
+build_image_and_deploy:
+  stage: deploy
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    #DOCKER_DRIVER: overlay   # overlay seems to be deprecated, but overlay2 should be ok!
+  image: docker:26.1.3
+  services:
+    - name: docker:26.1.3-dind 
+      alias: docker
+  script:
+    - echo "Trying to Log in to Gitlab Registry!!!   ---- $MY_CI_REGISTRY —- & ---$CI_REGISTRY"
+    - docker login -u  $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - echo "Logged in!!!"
+    - docker build -t $CI_REGISTRY/devops/spring-boot-banking:v1 .
+    - echo "Docker imagem construida!!!"
+    - docker push $CI_REGISTRY/devops/spring-boot-banking:v1
+    - echo "Imagem enviada para producao, no respositorio (registry) Gitlab!!+++   ! "
